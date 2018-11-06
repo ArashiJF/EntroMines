@@ -12,27 +12,30 @@ export class Cell {
         'height': '100%'
     };
     ramdonlyChosen = false;
+    spottedByTheSystem = false;
 
     constructor() {
         this.mined = false;
         this.numberOfSurroundingMines = 0;
     }
 
-    setNumberOfSurroundingMines(topRow: Cell[] | null, midRow: Cell[], bottomRow: Cell[] | null, row: number, col: number) {
-
+    getNumberOfSurroundingMines(topRow: Cell[] | null, midRow: Cell[], bottomRow: Cell[] | null, row: number, col: number) {
         const up = topRow != null, down = bottomRow != null, left = (col - 1) >= 0, right = (col + 1) < midRow.length;
+        let numberOfSurroundingMines = 0;
 
-        this.numberOfSurroundingMines = 0;
-        this.numberOfSurroundingMines += up ? (topRow[col].mined ? 1 : 0) : 0;
-        this.numberOfSurroundingMines += up && left ? (topRow[col - 1].mined ? 1 : 0) : 0;
-        this.numberOfSurroundingMines += up && right ? (topRow[col + 1].mined ? 1 : 0) : 0;
+        numberOfSurroundingMines = 0;
+        numberOfSurroundingMines += up ? (topRow[col].mined ? 1 : 0) : 0;
+        numberOfSurroundingMines += up && left ? (topRow[col - 1].mined ? 1 : 0) : 0;
+        numberOfSurroundingMines += up && right ? (topRow[col + 1].mined ? 1 : 0) : 0;
 
-        this.numberOfSurroundingMines += down ? (bottomRow[col].mined ? 1 : 0) : 0;
-        this.numberOfSurroundingMines += down && left ? (bottomRow[col - 1].mined ? 1 : 0) : 0;
-        this.numberOfSurroundingMines += down && right ? (bottomRow[col + 1].mined ? 1 : 0) : 0;
+        numberOfSurroundingMines += down ? (bottomRow[col].mined ? 1 : 0) : 0;
+        numberOfSurroundingMines += down && left ? (bottomRow[col - 1].mined ? 1 : 0) : 0;
+        numberOfSurroundingMines += down && right ? (bottomRow[col + 1].mined ? 1 : 0) : 0;
 
-        this.numberOfSurroundingMines += left ? (midRow[col - 1].mined ? 1 : 0) : 0;
-        this.numberOfSurroundingMines += right ? (midRow[col + 1].mined ? 1 : 0) : 0;
+        numberOfSurroundingMines += left ? (midRow[col - 1].mined ? 1 : 0) : 0;
+        numberOfSurroundingMines += right ? (midRow[col + 1].mined ? 1 : 0) : 0;
+
+        return numberOfSurroundingMines;
     }
 
     checkIfEmpty() {
@@ -68,20 +71,22 @@ export class Cell {
             this.cssStyle = {
                 'width': '100%',
                 'height': '100%',
-                'background-color': '#f44336'
+                'background-color': '#f44336',
+                'color': 'black'
             };
         } else {
             if (this.marked) {
                 this.cssStyle = {
                   'width': '100%',
                   'height': '100%',
-                  'background-color': '#69f0ae'
+                  'background-color': '#69f0ae',
+                  'color': 'black'
                 };
             } else {
                 this.cssStyle = {
                     'width': '100%',
                     'height': '100%',
-                    'background-color': '#888'
+                    'background-color': '#666'
                 };
             }
         }

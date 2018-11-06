@@ -14,8 +14,8 @@ export class AppComponent {
   victory: boolean;
   playtime = 0;
   interval: any;
-  minefieldStyle: any = {};
-  entropicChoices: Cell[][];
+  intervalC: any;
+  minefieldStyle: any;
 
   constructor() {
     this.newGame();
@@ -31,6 +31,52 @@ export class AppComponent {
     clearInterval(this.interval);
   }
 
+  startChoices() {
+    this.intervalC = setInterval(() => {
+      this.setEntropicChoice();
+    }, 2000);
+  }
+
+  pauseChoices() {
+    clearInterval(this.intervalC);
+  }
+
+  setEntropicChoice() {
+    // Remove previous entropic choice
+    this.minefield.rows.forEach(row => {
+      row.forEach(cell => {
+        if (cell.ramdonlyChosen) {
+          cell.ramdonlyChosen = false;
+        }
+      });
+    });
+
+    const unpressedCells: Cell[] = [];
+    const pressedCellsWithNumbers: Cell[] = [];
+    this.minefield.rows.forEach(row => {
+      row.forEach(cell => {
+        if (!cell.pressed) {
+          unpressedCells.push(cell);
+        }
+        if (cell.pressed && !cell.mined && cell.numberOfSurroundingMines > 0) {
+          pressedCellsWithNumbers.push(cell);
+        }
+      });
+    });
+    let minesToPlace = this.minefield.mines;
+
+    // Discard obvious matches
+    pressedCellsWithNumbers.forEach(cell => {
+      const borders: Cell[] = this.getBorders2(cell.row, cell.col);
+      if (borders.length <= cell.numberOfSurroundingMines) {
+        borders.forEach(c => {
+          c.ramdonlyChosen = true;
+          minesToPlace--;
+        });
+      }
+    });
+  }
+
   newGame() {
     this.minefield = new Minefield();
     this.defeat = false;
@@ -38,8 +84,18 @@ export class AppComponent {
     this.playtime = 0;
     if (this.interval !== undefined) {
       this.pauseTimer();
+      this.pauseChoices();
     }
+
+    this.minefieldStyle = {
+      'display': 'grid',
+      'grid-template-columns': 'repeat(' + this.minefield.rows[0].length.toString() + ', 1fr)',
+      'height': (window.innerHeight - 64).toString() + 'px',
+      'grid-gap': '1px',
+      'background-color': 'rgb(33, 33, 33)'
+    };
     this.startTimer();
+    this.startChoices();
   }
 
   cellChecked(result) {
@@ -56,6 +112,10 @@ export class AppComponent {
         });
       });
       this.minefieldStyle = {
+        'display': 'grid',
+        'grid-template-columns': 'repeat(' + this.minefield.rows[0].length.toString() + ', 1fr)',
+        'height': (window.innerHeight - 64).toString() + 'px',
+        'grid-gap': '1px',
         'background-color': 'rgb(33, 33, 33)'
       };
     } else {
@@ -100,11 +160,17 @@ export class AppComponent {
       this.pauseTimer();
       this.victory = true;
       this.minefieldStyle = {
+        'display': 'grid',
+        'grid-template-columns': 'repeat(' + this.minefield.rows[0].length.toString() + ', 1fr)',
+        'height': (window.innerHeight - 64).toString() + 'px',
+        'grid-gap': '1px',
         'background-color': '#7b1fa2'
       };
+      this.pauseChoices();
     }
   }
 
+  //  List of empty surrounding cells
   getBorders(row: number, col: number): Cell[] {
     const borders: Cell[] = [];
     const topRow = (row - 1) >= 0 ? this.minefield.rows[row - 1] : null;
@@ -125,6 +191,49 @@ export class AppComponent {
     }
 
     if (right && midRow[col + 1].isEmpty()) {
+      borders.push(midRow[col + 1]);
+    }
+
+    return borders;
+  }
+
+  // List of NOT empty surrounding cells
+  getBorders2(row: number, col: number): Cell[] {
+    const borders: Cell[] = [];
+    const topRow = (row - 1) >= 0 ? this.minefield.rows[row - 1] : null;
+    const midRow = this.minefield.rows[row];
+    const bottomRow = (row + 1) < this.minefield.rows.length ? this.minefield.rows[row + 1] : null;
+    const up = topRow != null, down = bottomRow != null, left = (col - 1) >= 0, right = (col + 1) < midRow.length;
+
+    if (up && !topRow[col].pressed) {
+      borders.push(topRow[col]);
+    }
+
+    if (up && left && !topRow[col - 1].pressed) {
+      borders.push(topRow[col - 1]);
+    }
+
+    if (up && right && !topRow[col + 1].pressed) {
+      borders.push(topRow[col + 1]);
+    }
+
+    if (down && !bottomRow[col].pressed) {
+      borders.push(bottomRow[col]);
+    }
+
+    if (down && left && !bottomRow[col - 1].pressed) {
+      borders.push(bottomRow[col - 1]);
+    }
+
+    if (down && right && !bottomRow[col + 1].pressed) {
+      borders.push(bottomRow[col + 1]);
+    }
+
+    if (left && !midRow[col - 1].pressed) {
+      borders.push(midRow[col - 1]);
+    }
+
+    if (right && !midRow[col + 1].pressed) {
       borders.push(midRow[col + 1]);
     }
 

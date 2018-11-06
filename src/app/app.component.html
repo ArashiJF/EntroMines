@@ -5,17 +5,14 @@
   <span class="toolbar-element"><button mat-button (click)="newGame()">New Game</button></span>
 </mat-toolbar>
 
-<div class="minefield">
-  <mat-grid-list *ngIf="minefield.rows[0].length" [cols]="minefield.rows[0].length" [ngStyle]="minefieldStyle">
-    <div *ngFor="let row of minefield.rows">
-      <mat-grid-tile *ngFor="let cell of row">
-        <app-cell class="cell"
-          [cell]="cell"
-          [victory]="victory"
-          [defeat]="defeat"
-          (afterChecked)="cellChecked($event)">
-        </app-cell>
-      </mat-grid-tile>
-    </div>
-  </mat-grid-list>
+<div
+  *ngIf="minefield" 
+  [ngStyle]="minefieldStyle">
+  <app-cell
+      *ngFor="let cell of minefield.getCells()"
+      [cell]="cell"
+      [victory]="victory"
+      [defeat]="defeat"
+      (afterChecked)="cellChecked($event)">
+  </app-cell>
 </div>

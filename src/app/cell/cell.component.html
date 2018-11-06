@@ -1,5 +1,7 @@
 <button mat-button (click)="check()" (contextmenu)="mark($event)" [ngStyle]="cell.cssStyle">
-    {{ cell.pressed ? (cell.mined ? '*':cell.numberOfSurroundingMines) : 
-        (cell.marked ? 'M' : 
-            (cell.ramdonlyChosen ? '*' : '')) }}
+    {{ cell.pressed ? 
+        (cell.mined ? '*' : 
+            (cell.numberOfSurroundingMines ? cell.numberOfSurroundingMines : ' ')) : 
+                (cell.marked ? 'M' : 
+                    (cell.ramdonlyChosen ? '*' : '?')) }}
 </button>

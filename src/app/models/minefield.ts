@@ -5,7 +5,7 @@ export class Minefield {
     mines: number;
     size: number;
 
-    constructor(rows: number = 8, columns: number = 8, mines: number = 10) {
+    constructor(rows: number = 12, columns: number = 12, mines: number = 25) {
         this.rows = [];
         this.mines = mines;
         this.size = rows * columns;
@@ -32,7 +32,7 @@ export class Minefield {
             row.forEach((cell, columnIndex) => {
                 cell.row = rowIndex;
                 cell.col = columnIndex;
-                cell.setNumberOfSurroundingMines(
+                cell.numberOfSurroundingMines = cell.getNumberOfSurroundingMines(
                     (rowIndex - 1) >= 0 ? this.rows[rowIndex - 1] : null,
                     row,
                     (rowIndex + 1) < this.rows.length ? this.rows[rowIndex + 1] : null,
@@ -41,5 +41,17 @@ export class Minefield {
                 );
             });
         });
+    }
+
+    getCells(): Cell[] {
+        const cells: Cell[] = [];
+
+        this.rows.forEach(row => {
+            row.forEach(cell => {
+                cells.push(cell);
+            });
+        });
+
+        return cells;
     }
 }
