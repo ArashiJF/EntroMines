@@ -1,0 +1,25 @@
+.minefield {
+    margin: 5px 5px auto 5px;
+    width: 500px;
+    height: 500px;
+    padding: 5px;
+    overflow: hidden;
+}
+
+.mat-grid-tile {
+    background-color: rgb(66, 66, 66);
+}
+
+.cell {
+    width: 100%;
+    height: 100%;
+}
+
+.toolbar-element {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.toolbar-separator {
+    width: 25px;
+}
